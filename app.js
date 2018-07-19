@@ -23,13 +23,13 @@ firebase.initializeApp({
 })
 
 var db = firebase.database();
-var ref = db.ref("employees");
+var ref = db.ref("entries");
 
 app.get('/', function(req, res) {
   res.sendFile(__dirname+'/index.html');
 });
 
-router.route('/employees')
+router.route('/entries')
   .get(function(req,res){
     ref.on("value", function(snapshot) {
       console.log(snapshot.val());
@@ -39,7 +39,7 @@ router.route('/employees')
     });
   });
 
-router.route('/employee/:name')
+router.route('/entry')
   .get(function(req,res){
     ref.child(req.params.name).on("value", function(snapshot) {
       console.log(snapshot.val());
@@ -51,9 +51,10 @@ router.route('/employee/:name')
   .post(function(req,res){
     var usersRef = ref.child(req.params.name);
     usersRef.set({
-      name: req.params.name,
-      age: req.body.age,
-      position: req.body.position
+      acce: {x: req.body.accex, y: req.body.accey, z: req.body.accez},
+      gyro: {x: req.body.gyrox, y: req.body.gyroy, z: req.body.gyroz},
+      uuid: 1,
+      time: req.body.time
     });
   })
   .put(function(req, res){

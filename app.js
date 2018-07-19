@@ -18,7 +18,7 @@ var listener = app.listen(app.get('port'), function() {
 });
 
 firebase.initializeApp({
-  databaseURL: "https://hacktj2018.firebaseio.com",
+  databaseURL: "https://snatched-c4168.firebaseio.com",
   service_account: "service.json"
 })
 

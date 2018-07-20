@@ -14,7 +14,7 @@
     "express": "^4.16.3",
     "firebase": "latest",
     "fs": "latest",
-    "json2csv": "latest"
+    "fast-csv": "latest"
   },
   "keywords": [
     "node",

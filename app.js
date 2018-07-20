@@ -92,6 +92,6 @@ function add_data_to_csv(){
 
   var writer = csvWriter({sendHeaders: false})
   writer.pipe(fs.createWriteStream('stolen.csv', {flags: 'a'}))
-  writer.write(data)
+  writer.write('1')
   writer.end()
 }

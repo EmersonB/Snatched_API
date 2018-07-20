@@ -35,6 +35,10 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname+'/index.html');
 });
 
+app.get('/csv', function(req, res) {
+  res.sendFile(__dirname+'/stolen.csv');
+});
+
 router.route('/entries')
   .get(function(req,res){
     ref.on("value", function(snapshot) {

@@ -55,7 +55,7 @@ router.route('/entry/:id')
     usersRef.set({
       acce: {x: req.body.accex, y: req.body.accey, z: req.body.accez},
       gyro: {x: req.body.gyrox, y: req.body.gyroy, z: req.body.gyroz},
-      uuid: 1,
+      id: req.params.id,
       time: req.body.time
     });
   })

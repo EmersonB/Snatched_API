@@ -57,7 +57,8 @@ router.route('/entry/:id')
      acce: {x: req.body.accex, y: req.body.accey, z: req.body.accez},
      gyro: {x: req.body.gyrox, y: req.body.gyroy, z: req.body.gyroz},
      time: req.body.time
- });
+ })
+res.send("success");
 })
 
 .put(function(req, res){

@@ -1,69 +1,43 @@
-
 var express = require('express');
 var path = require('path')
 var bodyParser = require('body-parser');
-var firebase = require("firebase");
 var fs = require('fs');
 var json2csv = require('json2csv').parse;
-var csvWriter = require('csv-write-stream')
-
+var csvWriter = require('csv-write-stream');
 var app = express();
+
 var router = express.Router();
-
 var newLine= "\r\n";
-
+var count = 1;
 
 app.use(bodyParser.urlencoded());
 app.use(express.static(__dirname + '/'));
 app.use('/api', router);
 app.set('port', process.env.PORT || 8080);
 
+var Gx={}; var Gy={}; var Gz={}; var Ax={}; var Ay={}; var Az={};
+var GxWriter = csvWriter({sendHeaders: false, headers:[1,2,3,4,5,6,7,8,9,10,11,12,13]});
+var GyWriter = csvWriter({sendHeaders: false, headers:[1,2,3,4,5,6,7,8,9,10,11,12,13]});
+var GzWriter = csvWriter({sendHeaders: false, headers:[1,2,3,4,5,6,7,8,9,10,11,12,13]});
+var AxWriter = csvWriter({sendHeaders: false, headers:[1,2,3,4,5,6,7,8,9,10,11,12,13]});
+var AyWriter = csvWriter({sendHeaders: false, headers:[1,2,3,4,5,6,7,8,9,10,11,12,13]});
+var AzWriter = csvWriter({sendHeaders: false, headers:[1,2,3,4,5,6,7,8,9,10,11,12,13]});
 
 var listener = app.listen(app.get('port'), function() {
   console.log( listener.address().port );
 });
 
-firebase.initializeApp({
-  databaseURL: "https://snatched-c4168.firebaseio.com",
-  service_account: "service.json"
+app.get('/api/safe', function(req, res) {
+  var spawn = require("child_process").spawn;
+  var proc = spawn('python3',["./api/snatched.py"]);
+  proc.stdout.on('data', function(data){
+    res.json({"data": (parseFloat(data)).toFixed(2).toString() });
+  });
 })
 
-var db = firebase.database();
-var ref = db.ref("entries");
-
-app.get('/', function(req, res) {
-  res.sendFile(__dirname+'/index.html');
-});
-
-app.get('/csv', function(req, res) {
-  res.sendFile(__dirname+'/stolen.csv');
-});
-
-router.route('/entries')
-  .get(function(req,res){
-    ref.on("value", function(snapshot) {
-      console.log(snapshot.val());
-      res.json(snapshot.val());
-    }, function (errorObject) {
-      console.log("The read failed: " + errorObject.code);
-    });
-});
-
 router.route('/entry/:id')
-  .get(function(req,res){
-    ref.child(req.params.id).on("value", function(snapshot) {
-      console.log(snapshot.val());
-      res.json(snapshot.val());
-    }, function (errorObject) {
-      console.log("The read failed: " + errorObject.code);
-    });
-  })
-
 .post(function(req,res){
-   var dataRef = ref.child(req.params.id);
-   console.log(req.body);
    add_data_to_csv({
-       Time: req.body.time,
        Gx: req.body.gyrox,
        Gy: req.body.gyroy,
        Gz: req.body.gyroz,
@@ -71,27 +45,38 @@ router.route('/entry/:id')
        Ay: req.body.accey,
        Az: req.body.accez
    })
-   dataRef.push({
-     acce: {x: req.body.accex, y: req.body.accey, z: req.body.accez},
-     gyro: {x: req.body.gyrox, y: req.body.gyroy, z: req.body.gyroz},
-     time: req.body.time
- })
-res.send("success");
+  console.log(req.body);
+  res.send("success");
 })
 
-.put(function(req, res){
+function add_data_to_csv(data) {
+  Gx[count] = data.Gx;
+  Gy[count] = data.Gy;
+  Gz[count] = data.Gz;
+  Ax[count] = data.Ax;
+  Ay[count] = data.Ay;
+  Az[count] = data.Az;
+  count++;
 
-})
-
-.delete(function(req,res){
-    var usersRef = ref.child(req.params.name);
-    usersRef.set(null);
-});
-
-function add_data_to_csv(){
-
-  var writer = csvWriter({sendHeaders: false})
-  writer.pipe(fs.createWriteStream('stolen.csv', {flags: 'a'}))
-  writer.write('1')
-  writer.end()
+  if(count > 12) {
+    Gx[count] = 1;
+    Gy[count] = 1;
+    Gz[count] = 1;
+    Ax[count] = 1;
+    Ay[count] = 1;
+    Az[count] = 1;
+    GxWriter.pipe(fs.createWriteStream('GxData.csv', {flags: 'a'}));
+    GyWriter.pipe(fs.createWriteStream('GyData.csv', {flags: 'a'}));
+    GzWriter.pipe(fs.createWriteStream('GzData.csv', {flags: 'a'}));
+    AxWriter.pipe(fs.createWriteStream('AxData.csv', {flags: 'a'}));
+    AyWriter.pipe(fs.createWriteStream('AyData.csv', {flags: 'a'}));
+    AzWriter.pipe(fs.createWriteStream('AzData.csv', {flags: 'a'}));
+    GxWriter.write(Gx);
+    GyWriter.write(Gy);
+    GzWriter.write(Gz);
+    AxWriter.write(Ax);
+    AyWriter.write(Ay);
+    AzWriter.write(Az);
+    count = 1;
+  }
 }

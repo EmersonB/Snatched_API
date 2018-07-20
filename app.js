@@ -51,14 +51,14 @@ router.route('/entry/:id')
   })
 
 .post(function(req,res){
-    var usersRef = ref.child(req.params.name);
-    usersRef.set({
-      acce: {x: req.body.accex, y: req.body.accey, z: req.body.accez},
-      gyro: {x: req.body.gyrox, y: req.body.gyroy, z: req.body.gyroz},
-      id: req.params.id,
-      time: req.body.time
-    });
-  })
+   var dataRef = ref.child(req.params.id);
+   console.log(req.body);
+   dataRef.push({
+     acce: {x: req.body.accex, y: req.body.accey, z: req.body.accez},
+     gyro: {x: req.body.gyrox, y: req.body.gyroy, z: req.body.gyroz},
+     time: req.body.time
+ });
+})
 
 .put(function(req, res){
 

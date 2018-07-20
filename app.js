@@ -62,7 +62,7 @@ router.route('/entry/:id')
 .post(function(req,res){
    var dataRef = ref.child(req.params.id);
    console.log(req.body);
-   data = {
+   add_data_to_csv({
        Time: req.body.time,
        Gx: req.body.gyrox,
        Gy: req.body.gyroy,
@@ -70,8 +70,7 @@ router.route('/entry/:id')
        Ax: req.body.accex,
        Ay: req.body.accey,
        Az: req.body.accez
-   }
-   add_data_to_csv(data)
+   })
    dataRef.push({
      acce: {x: req.body.accex, y: req.body.accey, z: req.body.accez},
      gyro: {x: req.body.gyrox, y: req.body.gyroy, z: req.body.gyroz},
@@ -89,7 +88,6 @@ res.send("success");
     usersRef.set(null);
 });
 
-add_data_to_csv(data)
 function add_data_to_csv(){
 
   var writer = csvWriter({sendHeaders: false})

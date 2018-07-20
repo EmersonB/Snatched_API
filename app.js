@@ -4,15 +4,16 @@ var path = require('path')
 var bodyParser = require('body-parser');
 var firebase = require("firebase");
 
-var router = express.Router();
 var app = express();
+var router = express.Router();
 
 
 app.use(bodyParser.urlencoded());
 app.use(express.static(__dirname + '/'));
 app.use('/api', router);
-
 app.set('port', process.env.PORT || 8080);
+
+
 var listener = app.listen(app.get('port'), function() {
   console.log( listener.address().port );
 });
@@ -37,18 +38,19 @@ router.route('/entries')
     }, function (errorObject) {
       console.log("The read failed: " + errorObject.code);
     });
-  });
+});
 
-router.route('/entry')
+router.route('/entry/:id')
   .get(function(req,res){
-    ref.child(req.params.name).on("value", function(snapshot) {
+    ref.child(req.params.id).on("value", function(snapshot) {
       console.log(snapshot.val());
       res.json(snapshot.val());
     }, function (errorObject) {
       console.log("The read failed: " + errorObject.code);
     });
   })
-  .post(function(req,res){
+
+.post(function(req,res){
     var usersRef = ref.child(req.params.name);
     usersRef.set({
       acce: {x: req.body.accex, y: req.body.accey, z: req.body.accez},
@@ -57,10 +59,12 @@ router.route('/entry')
       time: req.body.time
     });
   })
-  .put(function(req, res){
 
-  })
-  .delete(function(req,res){
+.put(function(req, res){
+
+})
+
+.delete(function(req,res){
     var usersRef = ref.child(req.params.name);
     usersRef.set(null);
-  });
+});
